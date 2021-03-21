@@ -3,10 +3,6 @@ import os
 import urllib.parse as urlparse
 from urllib.parse import parse_qs
 
-# For .env reading
-from dotenv import load_dotenv
-load_dotenv(os.path.join(os.path.abspath(os.getcwd()), '.env'))
-
 SKIP_ARGS = ['ref_src', 'utm']
 SKIP_PREFIX = ['//www.', '//mobile.', '//m.']
 GOOG_STATIC = 'www.gstatic.com'
@@ -16,7 +12,6 @@ BLANK_B64 = ('data:image/png;base64,'
              'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAQAAAAnOwc2AAAAD0lEQVR42mNkw'
              'AIYh7IgAAVVAAuInjI5AAAAAElFTkSuQmCC')
 
-
 # Ad keywords
 BLACKLIST = [
     'ad', 'anuncio', 'annuncio', 'annonce', 'Anzeige', '广告', '廣告', 'Reklama',
@@ -25,32 +20,13 @@ BLACKLIST = [
     'Reklāma', 'Reklaam', 'Διαφήμιση', 'מודעה', 'Hirdetés', 'Anúncio'
 ]
 
-# Setting up ALTs site Links
-SITE_ALTS = {}
-def get_alt_links():
-  print("Setting up alternative social media site..")
-  tw,yt,ig,rd = os.getenv("twitter"),os.getenv("youtube"),os.getenv("instagram"),os.getenv("reddit")
-  if tw != None and tw != "":
-      SITE_ALTS['twitter.com']=tw
-  else:
-    SITE_ALTS['twitter.com']=os.getenv('WHOOGLE_ALT_TW', 'nitter.net')
+SITE_ALTS = {
+    'twitter.com': os.getenv('WHOOGLE_ALT_TW', 'nitter.net'),
+    'youtube.com': os.getenv('WHOOGLE_ALT_YT', 'invidious.snopyta.org'),
+    'instagram.com': os.getenv('WHOOGLE_ALT_IG', 'bibliogram.art/u'),
+    'reddit.com': os.getenv('WHOOGLE_ALT_RD', 'libredd.it')
+}
 
-  if yt != None and yt != "":
-      SITE_ALTS['youtube.com']=yt
-  else:
-    SITE_ALTS['youtube.com']=os.getenv('WHOOGLE_ALT_YT', 'invalid.com')
- 
-  if ig != None and ig != "":
-      SITE_ALTS['instagram.com']=os.getenv("instagram")
-  else:
-    SITE_ALTS['instagram.com']=os.getenv('WHOOGLE_ALT_IG', 'bibliogram.art/u')
- 
-  if rd != None and rd != "":
-      SITE_ALTS['reddit.com']=os.getenv("reddit")
-  else:
-    SITE_ALTS['reddit.com']=os.getenv('WHOOGLE_ALT_RD', 'libredd.it')
-
-get_alt_links()
 
 def has_ad_content(element: str) -> bool:
     """Inspects an HTML element for ad related content
@@ -93,7 +69,6 @@ def get_site_alt(link: str) -> str:
         str: An updated (or ignored) result link
 
     """
-      
     for site_key in SITE_ALTS.keys():
         if site_key not in link:
             continue
